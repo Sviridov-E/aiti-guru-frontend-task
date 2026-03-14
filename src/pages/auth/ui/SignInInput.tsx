@@ -1,23 +1,23 @@
-import { Field, FieldLabel } from '@/shared/ui/field'
+import { Field, FieldDescription, FieldLabel } from '@/shared/ui/field'
 import { Input } from '@/shared/ui/input'
 
 import { User } from 'lucide-react'
-import { useId } from 'react'
+import { useId, type HTMLProps } from 'react'
 
 export const SignInInput = ({
   label,
-  type,
-  placeholder,
   className,
+  error,
+  ...inputProps
 }: {
   label: string
   placeholder?: string
-  type?: React.HTMLInputTypeAttribute
   className?: string
-}) => {
+  error?: string | null
+} & HTMLProps<HTMLInputElement>) => {
   const id = useId()
   return (
-    <Field className={className}>
+    <Field className={className} data-invalid={!!error}>
       <FieldLabel htmlFor={id} className='text-lg'>
         {label}
       </FieldLabel>
@@ -28,11 +28,12 @@ export const SignInInput = ({
         />
         <Input
           className='h-14 pl-13 md:text-lg'
-          placeholder={placeholder}
+          {...inputProps}
+          aria-invalid={!!error}
           id={id}
-          type={type}
         />
       </div>
+      {!!error && <FieldDescription>{error}</FieldDescription>}
     </Field>
   )
 }

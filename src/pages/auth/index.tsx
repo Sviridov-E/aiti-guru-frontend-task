@@ -1,13 +1,35 @@
+import { validation } from '@/shared/lib'
 import { Button } from '@/shared/ui'
 import { Checkbox } from '@/shared/ui/checkbox'
 import { Field } from '@/shared/ui/field'
 import { Label } from '@/shared/ui/label'
+import { Controller, useForm, type SubmitHandler } from 'react-hook-form'
 import { SignInInput } from './ui/SignInInput'
 
+interface AuthFormValues {
+  login: string
+  password: string
+  remember: boolean
+}
+
 export const AuthPage = () => {
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<AuthFormValues>()
+
+  const onSubmit: SubmitHandler<AuthFormValues> = values => {
+    console.log(values)
+  }
+
   return (
     <div className='flex min-h-screen w-screen items-center justify-center bg-gray-50'>
-      <div className='w-131.75 rounded-3xl bg-white p-12'>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className='w-131.75 rounded-3xl bg-white p-12'
+      >
         <h1 className='text-center text-[40px]/[110%] font-semibold tracking-[-0.015em] text-gray-800'>
           Добро пожаловать!
         </h1>
@@ -16,17 +38,48 @@ export const AuthPage = () => {
         </span>
 
         <div>
-          <SignInInput label='Логин' className='mt-8' />
-          <SignInInput label='Пароль' type='password' className='mt-4' />
+          <SignInInput
+            {...register('login', {
+              required: validation.required(),
+              maxLength: validation.maxLength(15),
+              minLength: validation.minLength(4),
+            })}
+            error={errors.login ? errors.login.message : null}
+            label='Логин'
+            className='mt-8'
+          />
+          <SignInInput
+            {...register('password', {
+              required: validation.required(),
+              maxLength: validation.maxLength(15),
+              minLength: validation.minLength(8),
+            })}
+            error={errors.password ? errors.password.message : null}
+            label='Пароль'
+            type='password'
+            className='mt-4'
+          />
         </div>
 
         <Field orientation='horizontal' className='mt-4'>
-          <Checkbox id='remember-checkbox' name='remember-checkbox' />
+          <Controller
+            name='remember'
+            control={control}
+            render={({ field: { value, onChange } }) => {
+              return (
+                <Checkbox
+                  id='remember-checkbox'
+                  checked={value}
+                  onCheckedChange={onChange}
+                />
+              )
+            }}
+          />
           <Label htmlFor='remember-checkbox'>Запомнить данные</Label>
         </Field>
 
         <Button className='mt-5 w-full'>Войти</Button>
-      </div>
+      </form>
     </div>
   )
 }
