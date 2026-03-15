@@ -11,4 +11,12 @@ export const validation = {
     value,
     message: `Минимальная длина: ${value}`,
   }),
+  max: (value: number) => ({
+    value,
+    message: `Не больше ${value}`,
+  }),
+  min: (value: number) => ({
+    value,
+    message: `Не меньше ${value}`,
+  }),
 }

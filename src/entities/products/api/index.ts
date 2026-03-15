@@ -2,7 +2,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import type { Product } from '../types'
 
-interface ProductsResponse {
+export interface ProductsStore {
   products: Product[]
   total: number
 }
@@ -26,7 +26,7 @@ export const useProducts = (
     query: string | null
   }
 ) =>
-  useQuery<ProductsResponse>({
+  useQuery<ProductsStore>({
     queryKey: ['products', { page, sort, order, countPerPage, query }],
     queryFn: async () => {
       try {
@@ -41,7 +41,7 @@ export const useProducts = (
             .filter(([, value]) => value !== null)
             .map(([key, value]) => [key, value?.toString()]) as string[][]
         ).toString()
-        const data = await authFetch<ProductsResponse>(
+        const data = await authFetch<ProductsStore>(
           `/api/products${query ? '/search' : ''}?${searchParams}`
         )
         if (!data) throw new Error('')

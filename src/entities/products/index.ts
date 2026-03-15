@@ -1,1 +1,1 @@
-export { useProducts } from './api'
+export { useProducts, type ProductsStore } from './api'

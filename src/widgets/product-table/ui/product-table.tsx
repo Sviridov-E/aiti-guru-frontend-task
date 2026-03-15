@@ -1,6 +1,7 @@
 import { authFetch } from '@/entities/auth'
 import { useProducts } from '@/entities/products'
 import { columns } from '@/entities/products/ui/columns'
+import { ProductModal } from '@/features/create-product'
 import { SearchProduct } from '@/features/search-products'
 import { DataTable } from '@/shared/ui/data-table'
 import {
@@ -60,6 +61,11 @@ export const ProductTable = () => {
       <div className='mb-4'>
         <SearchProduct />
       </div>
+
+      <div className='mb-4'>
+        <ProductModal />
+      </div>
+
       <div style={{ opacity: isFetching ? 0.5 : 1 }}>
         <DataTable
           columns={columns}
