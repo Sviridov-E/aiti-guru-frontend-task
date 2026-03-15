@@ -2,10 +2,10 @@ import { checkAuth } from '@/entities/auth'
 import { useUserStore } from '@/entities/user'
 
 export const checkUser = async () => {
-  const { startCheckUser, login, finishCheckUser, isPending, user } =
+  const { startCheckUser, login, finishCheckUser, idleStatus, user } =
     useUserStore.getState()
 
-  if (isPending || user) return
+  if (idleStatus !== 'initial' || user) return
 
   startCheckUser()
 

@@ -5,9 +5,8 @@ import { Button } from '@/shared/ui'
 import { Checkbox } from '@/shared/ui/checkbox'
 import { Field } from '@/shared/ui/field'
 import { Label } from '@/shared/ui/label'
-import { useEffect } from 'react'
 import { Controller, useForm, type SubmitHandler } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { login } from './lib/login'
 import { SignInInput } from './ui/SignInInput'
@@ -34,14 +33,7 @@ export const AuthPage = () => {
     formState: { errors },
   } = useForm<AuthFormValues>()
 
-  const { user } = useUserStore()
-
-  useEffect(() => {
-    // @ts-expect-error temporary
-    window.getUser = () => {
-      console.log(user)
-    }
-  }, [user])
+  const { user, idleStatus } = useUserStore()
 
   const navigate = useNavigate()
 
@@ -60,6 +52,8 @@ export const AuthPage = () => {
       })
     }
   }
+
+  if (user && idleStatus === 'done') return <Navigate to='/' />
 
   return (
     <div className='flex min-h-screen w-screen items-center justify-center bg-gray-50'>

@@ -80,6 +80,16 @@ export const authFetch = async <T extends object>(
   })
 
   if (response.status === 401) {
+    const json = await response.json()
+
+    /**
+     * В реально жизни - плохо полагаться на message,
+     * но т.к. мы работаем с dummyjson, то будем полагаться на это
+     * чтобы не кидать запрос на refresh, если access_token нет в куках
+     */
+    if (json.message === 'Access Token is required') {
+      throw new Error('Необходимо заного пройти аутентификацию')
+    }
     try {
       const newAccessToken = await refresh()
 

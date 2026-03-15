@@ -1,6 +1,7 @@
 import { AuthPage } from '@/pages/auth'
 import { DashboardPage } from '@/pages/dashboard'
 import { Toaster } from '@/shared/ui/sonner'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import './index.css'
@@ -21,16 +22,18 @@ const router = createBrowserRouter([
   },
 ])
 
+const queryClient = new QueryClient()
+
 function App() {
   useEffect(() => {
     checkUser()
   }, [])
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
       <Toaster position='bottom-center' richColors />
-    </>
+    </QueryClientProvider>
   )
 }
 

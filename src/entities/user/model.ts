@@ -1,8 +1,10 @@
 import { create } from 'zustand'
 
+type IdleStatus = 'initial' | 'loading' | 'done'
+
 interface UserState {
   user: { username: string; id: number } | null
-  isPending: boolean
+  idleStatus: IdleStatus
   startCheckUser: VoidFunction
   finishCheckUser: VoidFunction
   login: (user: NonNullable<UserState['user']>) => void
@@ -11,9 +13,9 @@ interface UserState {
 
 export const useUserStore = create<UserState>(set => ({
   user: null,
-  isPending: false,
-  startCheckUser: () => set({ isPending: true }),
-  finishCheckUser: () => set({ isPending: false }),
+  idleStatus: 'initial',
+  startCheckUser: () => set({ idleStatus: 'loading' }),
+  finishCheckUser: () => set({ idleStatus: 'done' }),
   login: user => set({ user }),
-  logout: () => set({ user: null, isPending: false }),
+  logout: () => set({ user: null, idleStatus: 'done' }),
 }))
