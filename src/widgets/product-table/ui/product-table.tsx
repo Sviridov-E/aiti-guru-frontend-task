@@ -3,16 +3,11 @@ import { useProducts } from '@/entities/products'
 import { columns } from '@/entities/products/ui/columns'
 import { ProductModal } from '@/features/create-product'
 import { SearchProduct } from '@/features/search-products'
+import { Button } from '@/shared/ui'
 import { DataTable } from '@/shared/ui/data-table'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/shared/ui/pagination'
+import { RefreshCw } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
+import { TablePagination } from './table-pagination'
 
 const LIMIT = 20
 
@@ -25,7 +20,7 @@ export const ProductTable = () => {
   const order = (searchParams.get('order') || 'asc') as SortDirection
   const query = searchParams.get('q') || null
 
-  const { data, isLoading, isFetching } = useProducts(authFetch, {
+  const { data, isLoading, isFetching, refetch } = useProducts(authFetch, {
     countPerPage: LIMIT,
     page,
     sort,
@@ -56,64 +51,60 @@ export const ProductTable = () => {
   if (isLoading) return <div>Загрузка товаров...</div>
 
   return (
-    <div className='p-4'>
-      <h1 className='text-2xl font-bold mb-4'>Товары</h1>
-      <div className='mb-4'>
-        <SearchProduct />
+    <div className='pt-5 '>
+      <div className='h-25 bg-card flex items-center justify-center px-8 relative'>
+        <h2 className='text-2xl font-bold absolute left-8 top-0 bottom-0 flex items-center'>
+          Товары
+        </h2>
+        <div className='w-5xl max-w-[calc(100vw-510px)]'>
+          <SearchProduct />
+        </div>
       </div>
 
-      <div className='mb-4'>
-        <ProductModal />
-      </div>
-
-      <div style={{ opacity: isFetching ? 0.5 : 1 }}>
-        <DataTable
-          columns={columns}
-          data={data?.products ?? []}
-          onSort={handleSort}
-          sort={sort}
-          order={order}
-        />
-      </div>
-
-      <div className='flex items-center justify-between py-4'>
-        <div className='text-sm text-muted-foreground'>
-          Показано {(page - 1) * LIMIT + 1}-
-          {Math.min(data?.total || 0, page * LIMIT)} из {data?.total}
+      <div className='mt-8 bg-card'>
+        <div className='mb-4 p-8 flex justify-between items-center'>
+          <h2 className='text-xl font-bold  '>Все позиции</h2>
+          <div className='flex gap-2'>
+            <Button
+              onClick={() => refetch()}
+              variant='outline'
+              className='size-10.5'
+            >
+              <RefreshCw className='size-5 text-gray-600' />
+            </Button>
+            <ProductModal />
+          </div>
         </div>
 
-        <Pagination>
-          <PaginationContent>
-            {page !== 1 && (
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => handlePageChange(Math.max(1, page - 1))}
-                />
-              </PaginationItem>
-            )}
+        <div
+          className='w-full px-8 overflow-x-auto'
+          style={{ opacity: isFetching ? 0.5 : 1 }}
+        >
+          <DataTable
+            columns={columns}
+            data={data?.products ?? []}
+            onSort={handleSort}
+            sort={sort}
+            order={order}
+          />
+        </div>
 
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <PaginationItem key={i}>
-                <PaginationLink
-                  isActive={page === i + 1}
-                  onClick={() => handlePageChange(i + 1)}
-                >
-                  {i + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
+        <div className='flex items-center justify-between py-10 px-8'>
+          <div className='text-lg text-muted-foreground whitespace-nowrap'>
+            Показано
+            <span className='text-foreground px-2'>
+              {(page - 1) * LIMIT + 1}-
+              {Math.min(data?.total || 0, page * LIMIT)}
+            </span>
+            из<span className='text-foreground px-2'>{data?.total}</span>
+          </div>
 
-            {page !== totalPages && (
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() =>
-                    handlePageChange(Math.min(totalPages, page + 1))
-                  }
-                />
-              </PaginationItem>
-            )}
-          </PaginationContent>
-        </Pagination>
+          <TablePagination
+            page={page}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
+          />
+        </div>
       </div>
     </div>
   )

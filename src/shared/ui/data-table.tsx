@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/shared/ui/table'
+import { cn } from '../lib'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -42,44 +43,78 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className=''>
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map(headerGroup => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <TableHead key={header.id}>
+    <Table>
+      <TableHeader>
+        {table.getHeaderGroups().map(headerGroup => (
+          <TableRow key={headerGroup.id}>
+            {headerGroup.headers.map((header, index) => (
+              <TableHead
+                key={header.id}
+                className={cn(
+                  'overflow-hidden',
+                  'text-base font-bold py-6 text-neutral-300',
+                  header.id !== 'title' && 'text-center',
+                  !index && 'pl-4'
+                )}
+                style={{
+                  width:
+                    header.column.id === 'title'
+                      ? 'auto'
+                      : `${header.getSize()}px`,
+                }}
+              >
+                <span className='truncate'>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
-                </TableHead>
+                </span>
+              </TableHead>
+            ))}
+          </TableRow>
+        ))}
+      </TableHeader>
+      <TableBody>
+        {data.length ? (
+          table.getRowModel().rows.map(row => (
+            <TableRow
+              key={row.id}
+              data-state={row.getIsSelected() ? 'selected' : null}
+              className='group transition-colors data-[state=selected]:bg-muted/50'
+            >
+              {row.getVisibleCells().map((cell, index) => (
+                <TableCell
+                  key={cell.id}
+                  className={cn(
+                    cell.column.id !== 'title' && 'text-center',
+                    'overflow-hidden',
+                    // Индикатор выбранной строки
+                    'relative',
+                    index === 0 &&
+                      'pl-4 group-data-[state=selected]:before:absolute group-data-[state=selected]:before:left-0 group-data-[state=selected]:before:top-0 group-data-[state=selected]:before:h-full group-data-[state=selected]:before:w-0.75 group-data-[state=selected]:before:bg-primary'
+                  )}
+                  style={{
+                    width:
+                      cell.column.id === 'title'
+                        ? 'auto'
+                        : `${cell.column.getSize()}px`,
+                  }}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
               ))}
             </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {data.length ? (
-            table.getRowModel().rows.map(row => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className='h-24 text-center'>
-                Нет данных.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+          ))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={columns.length} className='h-24 text-center'>
+              Нет данных.
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
   )
 }

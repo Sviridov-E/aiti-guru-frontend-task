@@ -3,7 +3,7 @@ export interface Product {
   title: string
   brand: string
   category: string
-  thumbnail?: string[]
+  thumbnail?: string
   sku: string
   price: number
   rating: number

@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/shared/ui/dialog'
+import { PlusCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useCreateProduct, type NewProduct } from '../model/use-create-product'
@@ -45,7 +46,9 @@ export const ProductModal = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Добавить товар</Button>
+        <Button className='h-10.5 px-5 text-base'>
+          <PlusCircle className='size-5 mr-1' /> Добавить
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

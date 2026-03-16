@@ -1,4 +1,3 @@
-import { authFetch } from '@/entities/auth'
 import { useUserStore } from '@/entities/user'
 import { validation } from '@/shared/lib'
 import { Button } from '@/shared/ui'
@@ -17,14 +16,6 @@ interface AuthFormValues {
   remember: boolean
 }
 
-// @ts-expect-error temporary
-window.isAuth = () => {
-  try {
-    authFetch('/api/auth/me').then(console.log)
-  } catch (e) {
-    console.error(e)
-  }
-}
 export const AuthPage = () => {
   const {
     register,
@@ -56,10 +47,10 @@ export const AuthPage = () => {
   if (user && idleStatus === 'done') return <Navigate to='/' />
 
   return (
-    <div className='flex min-h-screen w-screen items-center justify-center bg-gray-50'>
+    <div className='flex min-h-screen w-screen items-center justify-center'>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className='w-131.75 rounded-3xl bg-white p-12'
+        className='w-131.75 rounded-3xl bg-card p-12'
       >
         <h1 className='text-center text-[40px]/[110%] font-semibold tracking-[-0.015em] text-gray-800'>
           Добро пожаловать!
