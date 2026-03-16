@@ -8,7 +8,8 @@ import { Controller, useForm, type SubmitHandler } from 'react-hook-form'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { login } from './lib/login'
-import { SignInInput } from './ui/SignInInput'
+import { Logo } from './ui/logo'
+import { SignInInput } from './ui/sign-in-input'
 
 interface AuthFormValues {
   username: string
@@ -48,60 +49,67 @@ export const AuthPage = () => {
 
   return (
     <div className='flex min-h-screen w-screen items-center justify-center'>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className='w-131.75 rounded-3xl bg-card p-12'
-      >
-        <h1 className='text-center text-[40px]/[110%] font-semibold tracking-[-0.015em] text-gray-800'>
-          Добро пожаловать!
-        </h1>
-        <span className='mt-3 block text-center text-lg/6 font-medium text-gray-200'>
-          Пожалуйста, авторизуйтесь
-        </span>
+      <div className='w-131.75 rounded-4xl bg-card p-1.5  shadow-[0_24px_32px_#0000000a]'>
+        <div className='p-px rounded-[calc(var(--radius-4xl)-6px)] bg-linear-to-b from-20% from-neutral-200 to-transparent'>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className='bg-card p-12 flex flex-col items-center rounded-[calc(var(--radius-4xl)-7px)] bg-linear-to-b to-50% from-[#23232308] to-transparent'
+          >
+            <Logo className='mb-8' />
 
-        <div>
-          <SignInInput
-            {...register('username', {
-              required: validation.required(),
-              maxLength: validation.maxLength(15),
-              minLength: validation.minLength(4),
-            })}
-            error={errors.username ? errors.username.message : null}
-            label='Логин'
-            className='mt-8'
-          />
-          <SignInInput
-            {...register('password', {
-              required: validation.required(),
-              maxLength: validation.maxLength(15),
-              minLength: validation.minLength(8),
-            })}
-            error={errors.password ? errors.password.message : null}
-            label='Пароль'
-            type='password'
-            className='mt-4'
-          />
+            <h1 className='text-center text-[40px]/[110%] font-semibold tracking-[-0.015em] text-gray-800'>
+              Добро пожаловать!
+            </h1>
+
+            <span className='mt-3  block text-center text-lg/6 font-medium text-gray-300'>
+              Пожалуйста, авторизуйтесь
+            </span>
+
+            <div className='w-full'>
+              <SignInInput
+                {...register('username', {
+                  required: validation.required(),
+                  maxLength: validation.maxLength(15),
+                  minLength: validation.minLength(4),
+                })}
+                error={errors.username ? errors.username.message : null}
+                label='Логин'
+                className='mt-8'
+              />
+              <SignInInput
+                {...register('password', {
+                  required: validation.required(),
+                  maxLength: validation.maxLength(15),
+                  minLength: validation.minLength(8),
+                })}
+                error={errors.password ? errors.password.message : null}
+                label='Пароль'
+                type='password'
+                className='mt-4'
+              />
+            </div>
+
+            <Field orientation='horizontal' className='mt-4'>
+              <Controller
+                name='remember'
+                control={control}
+                render={({ field: { value, onChange } }) => {
+                  return (
+                    <Checkbox
+                      id='remember-checkbox'
+                      checked={value}
+                      onCheckedChange={onChange}
+                    />
+                  )
+                }}
+              />
+              <Label htmlFor='remember-checkbox'>Запомнить данные</Label>
+            </Field>
+
+            <Button className='mt-5 w-full'>Войти</Button>
+          </form>
         </div>
-
-        <Field orientation='horizontal' className='mt-4'>
-          <Controller
-            name='remember'
-            control={control}
-            render={({ field: { value, onChange } }) => {
-              return (
-                <Checkbox
-                  id='remember-checkbox'
-                  checked={value}
-                  onCheckedChange={onChange}
-                />
-              )
-            }}
-          />
-          <Label htmlFor='remember-checkbox'>Запомнить данные</Label>
-        </Field>
-
-        <Button className='mt-5 w-full'>Войти</Button>
-      </form>
+      </div>
     </div>
   )
 }
