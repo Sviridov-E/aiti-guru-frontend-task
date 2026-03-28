@@ -89,7 +89,7 @@ export const columns: ColumnDef<Product>[] = [
     cell: ({ getValue }) => {
       const rating = getValue<number>()
 
-      if (!rating) return null
+      if (rating == null) return null
 
       const roundedRating = Math.round(rating * 10) / 10
 
@@ -110,7 +110,7 @@ export const columns: ColumnDef<Product>[] = [
     cell: ({ getValue }) => {
       const price = getValue<number>()
 
-      if (!price) return null
+      if (price == null) return null
 
       const priceString = price.toLocaleString('ru-RU', {
         currency: 'RUB',

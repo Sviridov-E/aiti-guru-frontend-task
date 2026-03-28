@@ -63,7 +63,9 @@ export const ProductModal = () => {
                   key in prepareValue
                     ? (prepareValue[key as keyof NewProduct]?.(value) ?? null)
                     : value
-                return resultValue ? { ...acc, [key]: resultValue } : acc
+                return resultValue != null
+                  ? { ...acc, [key]: resultValue }
+                  : acc
               },
               {} as NewProduct
             )
