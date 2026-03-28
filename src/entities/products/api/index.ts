@@ -1,15 +1,19 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import type { Product } from '../types'
+import z, { ZodType } from 'zod'
+import { productSchema } from '../types'
 
-export interface ProductsStore {
-  products: Product[]
-  total: number
-}
+export const productsStoreSchema = z.object({
+  products: z.array(productSchema),
+  total: z.number(),
+})
+
+export type ProductsStore = z.infer<typeof productsStoreSchema>
 
 export const useProducts = (
-  authFetch: <T extends object>(
+  authFetch: <T>(
     url: string,
+    schema: ZodType<T>,
     params?: RequestInit | undefined
   ) => Promise<T | undefined>,
   {
@@ -41,13 +45,14 @@ export const useProducts = (
             .filter(([, value]) => value !== null)
             .map(([key, value]) => [key, value?.toString()]) as string[][]
         ).toString()
-        const data = await authFetch<ProductsStore>(
-          `/api/products${query ? '/search' : ''}?${searchParams}`
+        const data = await authFetch(
+          `/api/products${query ? '/search' : ''}?${searchParams}`,
+          productsStoreSchema
         )
-        if (!data) throw new Error('')
+        if (!data) throw new Error('Ошибка при полученнии данных')
         return data
       } catch (e) {
-        if (e instanceof Error) toast.error(e.message)
+        if (e instanceof Error) toast.error('Ошибка при получении данных')
         throw e
       }
     },

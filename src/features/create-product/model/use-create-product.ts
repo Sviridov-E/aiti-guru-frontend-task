@@ -19,10 +19,20 @@ export const useCreateProduct = () => {
 
   return useMutation({
     mutationFn: (newProduct: NewProduct) => {
-      return authFetch('/api/products/add', {
-        method: 'POST',
-        body: JSON.stringify(newProduct),
-      })
+      return authFetch(
+        '/api/products/add',
+        z.object({
+          id: z.number(),
+          title: z.string(),
+          price: z.number(),
+          brand: z.string().optional(),
+          rating: z.number().optional(),
+        }),
+        {
+          method: 'POST',
+          body: JSON.stringify(newProduct),
+        }
+      )
     },
 
     onSuccess: createdProduct => {

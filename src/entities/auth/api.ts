@@ -1,4 +1,4 @@
-import z from 'zod'
+import z, { ZodType } from 'zod'
 import { useSessionAuthStore } from './model'
 
 const DEFAULT_HEADERS = { 'Content-Type': 'application/json' }
@@ -33,7 +33,6 @@ export const refresh = (() => {
       })
       .parse(json)
 
-    // если храним токены локально без кук
     useSessionAuthStore.getState().login(newTokens, rememberMe)
 
     return newTokens.accessToken
@@ -52,11 +51,16 @@ export const refresh = (() => {
   }
 })()
 
-export const authFetch = async <T extends object>(
+export const authFetch = async <T>(
   url: string,
+  schema: ZodType<T>,
   params?: Parameters<typeof fetch>[1]
 ) => {
   const { accessToken } = useSessionAuthStore.getState()
+
+  if (!accessToken) {
+    throw new Error('Необходимо заного пройти аутентификацию')
+  }
 
   let response = await fetch(url, {
     ...params,
@@ -69,12 +73,6 @@ export const authFetch = async <T extends object>(
   })
 
   if (response.status === 401) {
-    /**
-     * Если при 401 accessToken вовсе нет - значит нужно заного войти в систему
-     */
-    if (!accessToken) {
-      throw new Error('Необходимо заного пройти аутентификацию')
-    }
     try {
       const newAccessToken = await refresh()
 
@@ -102,15 +100,21 @@ export const authFetch = async <T extends object>(
       throw new Error(json.message || 'Во время запроса возникла ошибка')
     }
 
-    return json as T
+    const data = schema.parse(json)
+
+    return data
   } catch (error) {
-    if (error instanceof Error) throw error
+    console.error(error)
+    throw error
   }
 }
 
 export const checkAuth = async () => {
   try {
-    return await authFetch<{ username: string; id: number }>('/api/auth/me')
+    return await authFetch<{ username: string; id: number }>(
+      '/api/auth/me',
+      z.object({ username: z.string(), id: z.number() })
+    )
   } catch {
     return null
   }
